@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    float speed = 1;
+    float speed = 1; //Velocidad de las naves enemigas
     float desplazamiento = 1.6f; //Límite de desplazamiento para la derecha y para la izquierda.
 
-    Vector3 startPosition;
+    Vector3 startPosition; //Posicion inicial
 
     // Start is called before the first frame update
     void Start()
