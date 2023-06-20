@@ -4,83 +4,79 @@ using UnityEngine;
 
 public class NaveJugador : MonoBehaviour
 {
-    private float speed;
+    private float speed; // Velocidad de desplazamiento del jugador
 
-    private Rigidbody2D rb;
+    private Rigidbody2D rb; // Referencia al componente Rigidbody2D de la nave
 
-    private Collider2D shipCollider;
+    private Collider2D shipCollider; // Referencia al colisionador de la nave
 
-    private float actualSpeed;
+    private float actualSpeed; // Velocidad de movimiento actual
 
-    //Limite recorrido horizontal
-    protected Vector3 limitIzq;
-    protected Vector3 limitDer;
+    // Límites de recorrido horizontal
+    protected Vector3 limitIzq; // Límite izquierdo
+    protected Vector3 limitDer; // Límite derecho
 
-    [SerializeField] private GameObject laser; //Disparo Jugador
+    [SerializeField] private GameObject laser; // Prefab del láser del jugador
 
     // Start is called before the first frame update
     void Start()
     {
-        speed = 2.8f; //Velocidad desplazamiento
+        speed = 2.8f; // Establece la velocidad de desplazamiento
 
-        rb = GetComponent<Rigidbody2D>(); //Detectar colisiones
+        rb = GetComponent<Rigidbody2D>(); // Obtiene el componente Rigidbody2D de la nave
 
-        shipCollider = GetComponent<Collider2D>(); //ColisionNave
+        shipCollider = GetComponent<Collider2D>(); // Obtiene el colisionador de la nave
 
-        limitIzq = new Vector3(-5, -3, 0); //Limite recorrido horizontal
+        limitIzq = new Vector3(-5, -3, 0); // Establece el límite de recorrido horizontal izquierdo
 
-        limitDer = new Vector3(5, -3, 0); //Limite recorrido horizontal
+        limitDer = new Vector3(5, -3, 0); // Establece el límite de recorrido horizontal derecho
 
-        //El jugador podra disparar un proyectil al presionar la barra espaciadora
+        // El jugador podrá disparar un proyectil al presionar la barra espaciadora
         LaserSpawn(laser, new Vector3(transform.position.x, transform.position.y + 0.38f, transform.position.z));
-    
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Desplazarse a la Izquierda y su limite
-        if((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) && transform.position.x > limitIzq.x){
-
+        // Desplazamiento a la izquierda y su límite
+        if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) && transform.position.x > limitIzq.x)
+        {
             actualSpeed = speed;
-
-            transform.Translate(Vector2.left * actualSpeed * Time.deltaTime); //Mover la transformación en la dirección y distancia de la traducción".
-
-        //Desplazarse a la derecha y su limite
-        }else if((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) && transform.position.x < limitDer.x){
-
+            transform.Translate(Vector2.left * actualSpeed * Time.deltaTime); // Mueve la nave hacia la izquierda
+        }
+        // Desplazamiento a la derecha y su límite
+        else if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) && transform.position.x < limitDer.x)
+        {
             actualSpeed = speed;
-
-            transform.Translate(Vector2.right * actualSpeed * Time.deltaTime); //Traduce el valor real en la escena
+            transform.Translate(Vector2.right * actualSpeed * Time.deltaTime); // Mueve la nave hacia la derecha
         }
 
-        //Eljugador podra disparar un proyectil al presionar la barra espaciadora
-        if(Input.GetKeyDown(KeyCode.Space)){
-            Debug.Log("Nave: he apretado el gatillo");
-            //laser.GetComponent<LaserNave>().IsShot();
-            StartCoroutine("CorutSpawn"); //Comienzo a esperar
+        // El jugador podrá disparar un proyectil al presionar la barra espaciadora
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine("CorutSpawn"); // Inicia la corrutina para controlar el disparo del láser
         }
     }
 
-    private void LaserSpawn(GameObject laser, Vector3 position){
-
-        Instantiate(laser, position, Quaternion.identity);
-
+    private void LaserSpawn(GameObject laser, Vector3 position)
+    {
+        Instantiate(laser, position, Quaternion.identity); // Instancia un láser en la posición especificada
     }
 
-    //Una vez disparado un proyectil no se dispondra de otro proyectil para disparar hasta transcurridos 0.4s
-    private IEnumerator CorutSpawn(){
+    // Una vez disparado un proyectil, no se podrá disparar otro hasta transcurridos 0.4 segundos
+    private IEnumerator CorutSpawn()
+    {
+        yield return new WaitForSeconds(0.4f); // Espera 0.4 segundos
 
-        Debug.Log("Se ha iniciado la corrutina");
-
-        yield return new WaitForSeconds(0.4f); //Espero 0.4s
-
-        LaserSpawn(laser, transform.position); //Disparo
+        LaserSpawn(laser, transform.position); // Dispara el láser
     }
 
-     void OnTriggerEnter2D(Collider2D other){ //Permite detectar la colision con el fantasma
-        if(other.gameObject.tag == "BalaEnemiga") { //Mediante un tag "fantasma"
-            GameManager.instance.cartelGameOver.SetActive(true);
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // Detecta la colisión con un objeto que tenga el tag "BalaEnemiga"
+        if (other.gameObject.tag == "BalaEnemiga")
+        {
+            GameManager.instance.cartelGameOver.SetActive(true); // Activa el cartel de Game Over en el GameManager
         }
     }
 }
